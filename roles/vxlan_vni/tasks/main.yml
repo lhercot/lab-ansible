@@ -1,0 +1,15 @@
+---
+- name: VxLAN - Create SVI for VNI
+  nxos_interface:
+    interface: Vlan169
+    description: 'Interface Vlan169 | VNI 16900 -- Configured by Ansible'
+    mode: layer3
+    fabric_forwarding_anycast_gateway: true
+    admin_state: up
+    state: present
+    transport: nxapi
+    use_ssl: yes
+    username: admin
+    password: C1sco123
+    port: 9443
+    validate_certs: no

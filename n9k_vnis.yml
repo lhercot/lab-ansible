@@ -1,0 +1,6 @@
+---
+- hosts: 10.9.2.61
+  connection: local
+  roles:
+    - enable_nxapi
+    - vxlan_vni 
