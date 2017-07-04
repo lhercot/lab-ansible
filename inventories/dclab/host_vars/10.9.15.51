@@ -1,2 +1,2 @@
 ---
-proxy_settings_no_proxy: '10.9.2.91,10.9.2.92,10.9.2.93,.dcteambxl.cisco.com'
+proxy_settings_no_proxy: '10.9.2.60,10.9.2.61,10.9.2.62,10.9.2.63,10.9.2.64,.dcteambxl.cisco.com'
