@@ -1,0 +1,6 @@
+---
+- name: create a new user
+  nxos_user:
+    name: admin
+    sshkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    state: present

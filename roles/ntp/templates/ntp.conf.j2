@@ -1,0 +1,19 @@
+tinker panic 0
+driftfile /var/lib/ntp/drift
+
+restrict ::1
+restrict 127.0.0.1
+restrict default nomodify notrap nopeer noquery
+
+# NTP server pool, use 3 minimally
+{% for server in ntp_servers %}
+server {{ server }}
+{% endfor %}
+
+includefile /etc/ntp/crypto/pw
+keys /etc/ntp/keys
+disable monitor
+
+# Avoid using the local clock
+server 127.127.1.0 # local clock
+fudge 127.127.1.0 stratum 10

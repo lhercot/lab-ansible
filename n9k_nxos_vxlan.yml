@@ -1,0 +1,6 @@
+---
+- hosts: n9k-nxos-vxlan
+  connection: local
+  roles:
+    - add_sshkey_nxos
+    - enable_nxapi

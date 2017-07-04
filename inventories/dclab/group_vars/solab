@@ -1,3 +1,8 @@
-ntp: 10.9.0.9
+---
 domain: dcteambxl.cisco.com
-
+ntp_servers:
+  - 10.9.0.2
+timezone: Europe/Brussels
+proxy_settings_http_proxy: 'http://proxy.esl.cisco.com:80'
+proxy_settings_https_proxy: 'http://proxy.esl.cisco.com:80'
+proxy_settings_no_proxy: '.dcteambxl.cisco.com'

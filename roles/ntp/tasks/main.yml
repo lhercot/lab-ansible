@@ -1,0 +1,102 @@
+---
+
+- name: configure the timezone to {{timezone}}
+  file:
+    src: /usr/share/zoneinfo/{{timezone}}
+    dest: /etc/localtime
+    state: link
+    force: yes
+    backup: yes
+  tags:
+    - timezone
+    - server
+
+- name: make sure package ntp is installed
+  yum:
+    name: ntp
+    state: installed
+  tags:
+    - ntp
+
+- name: ensure system configuration directory exists
+  file:
+    path: /etc/sysconfig
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: copy /etc/sysconfig/ntpd
+  copy:
+    src: ntpd
+    dest: '/etc/sysconfig/ntpd'
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - ntp
+  notify:
+    - restart ntpd
+
+- name: build and write /etc/ntp.conf file
+  template:
+    src: ntp.conf.j2
+    dest: '/etc/ntp.conf'
+    owner: root
+    group: root
+    mode: 0644
+  tags:
+    - ntp
+  notify:
+    - restart ntpd
+
+- name: enable ntpd as a service
+  service:
+    name: ntpd
+    enabled: yes
+    state: started
+  tags:
+    - ntp
+
+- name: wait 5 seconds
+  pause:
+    seconds: 5
+  tags:
+    - ntp
+
+- name: verify time synchronization
+  command: ntpstat
+  register: ntpstat
+  changed_when: no
+  ignore_errors: yes
+  tags:
+    - test
+    - ntp
+
+- debug: msg="{{ ntpstat.stdout }}"
+
+- name: stop ntpd as a service
+  service:
+    name: ntpd
+    enabled: yes
+    state: stopped
+  when: ntpstat.rc is defined and ntpstat.rc != 0
+  tags:
+    - ntp
+
+- name: sync the clock to {{ ntp_servers[0] }} ntp server
+  command: ntpdate {{ ntp_servers[0] }}
+  when: ntpstat.rc is defined and ntpstat.rc != 0
+  changed_when: yes
+  ignore_errors: yes
+  tags:
+    - ntp
+
+- name: enable ntpd as a service
+  service:
+    name: ntpd
+    enabled: yes
+    state: started
+  when: ntpstat.rc is defined and ntpstat.rc != 0
+  tags:
+    - ntp

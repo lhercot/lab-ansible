@@ -2,5 +2,6 @@
 - hosts: jumphosts
   user: root
   roles:
-    - common
-
+    - update_all
+    - ntp
+    - proxy_settings

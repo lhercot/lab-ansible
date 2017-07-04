@@ -1,0 +1,7 @@
+---
+- name: Enable NXAPI with no HTTP, HTTPS at port 9443 with sandbox enabled
+  nxos_nxapi:
+    enable_http: false
+    https_port: 9443
+    https: yes
+    state: present
