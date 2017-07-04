@@ -1,0 +1,9 @@
+# DC Team Lab Inventory
+
+[solab-jumphosts]
+10.9.15.51
+
+# jumphosts in all geos
+[jumphosts:children]
+solab-jumphosts
+
