@@ -1,0 +1,63 @@
+---
+- name: VxLAN - Create Vlan for VNI
+  nxos_vlan:
+    vlan_id: "{{ item.vlan_id }}"
+    mapped_vni: "{{ item.vni }}"
+    state: present
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Create SVI
+  nxos_interface:
+    interface: "Vlan{{ item.vlan_id }}"
+    description: "Interface Vlan{{ item.vlan_id }} | VNI {{ item.vni }} -- Configured by Ansible"
+    mode: layer3
+    state: present
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Assign SVI to Tenant VRF
+  nxos_vrf_interface:
+    vrf: "{{ tenant.vrf }}"
+    interface: "Vlan{{ item.vlan_id }}"
+    state: present
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Configure SVI
+  nxos_interface:
+    interface: "Vlan{{ item.vlan_id }}"
+    mode: layer3
+    fabric_forwarding_anycast_gateway: true
+    admin_state: up
+    state: present
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Set MTU to 9216 on SVI 
+  nxos_mtu:
+    interface: "Vlan{{ item.vlan_id }}"
+    mtu: 9216
+    state: present
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Configure IPv4 Anycast Gateway address on SVI
+  nxos_ip_interface:
+    interface: "Vlan{{ item.vlan_id }}"
+    version: v4
+    state: present
+    addr: "{{ item.anycast_gw_ip }}"
+    mask: "{{ item.anycast_gw_mask }}"
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Add VNI to NVE
+  nxos_vxlan_vtep_vni:
+    interface: "{{ nve }}"
+    vni: "{{ item.vni }}"
+    multicast_group: "{{ item.multicast_group }}"
+    state: present
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Add VNI to EVPN
+  nxos_evpn_vni:
+    vni: "{{ item.vni }}"
+    route_distinguisher: auto
+    route_target_both: "{{ item.vni }}:{{ item.vni }}"
+    state: present
+  with_items: "{{ tenant.vnis }}"

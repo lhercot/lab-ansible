@@ -11,9 +11,19 @@ solab-jumphosts
 solab-jumphosts
 
 
-[n9k-nxos-vxlan]
-10.9.2.[60:64]
+
+[n9k-vxlan-leafs]
+10.9.2.[61:62]
+10.9.2.64
+
+[n9k-vxlan-spines]
+10.9.2.60
+10.9.2.63
+
+[n9k-vxlan:children]
+n9k-vxlan-leafs
+n9k-vxlan-spines
 
 [n9k-nxos:children]
-n9k-nxos-vxlan
+n9k-vxlan
 

@@ -1,0 +1,10 @@
+---
+- hosts: 10.9.2.61
+  connection: local
+  roles:
+    - remove_vxlan_vni
+  vars:
+    vni: 17000
+    vlan_id: 170
+    nve: nve1
+    vrf: evpn-tenant-1 

@@ -1,0 +1,23 @@
+---
+nve: nve1
+vxlan:
+  - vrf: evpn-tenant-1
+    vnis:
+      - vni: 16900
+        vlan_id: 169
+        anycast_gw_ip: 10.10.169.254
+        anycast_gw_mask: 24
+        multicast_group: 239.1.1.169
+      - vni: 17000
+        vlan_id: 170
+        anycast_gw_ip: 10.10.170.254
+        anycast_gw_mask: 24
+        multicast_group: 239.1.1.170
+
+  - vrf: evpn-tenant-2
+    vnis:
+      - vni: 21000
+        vlan_id: 210
+        anycast_gw_ip: 10.10.210.254
+        anycast_gw_mask: 24
+        multicast_group: 239.1.1.210

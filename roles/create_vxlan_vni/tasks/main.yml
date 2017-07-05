@@ -1,0 +1,6 @@
+---
+- include: vni.yml tenant={{elem}}
+  with_items: "{{ vxlan }}"
+  loop_control:
+       loop_var: elem
+  

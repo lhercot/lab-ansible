@@ -1,6 +1,5 @@
 ---
-- hosts: 10.9.2.61
+- hosts: n9k-vxlan-leafs
   connection: local
   roles:
-    - enable_nxapi
-    - vxlan_vni 
+    - create_vxlan_vni
