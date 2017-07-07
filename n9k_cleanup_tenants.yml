@@ -2,4 +2,4 @@
 - hosts: n9k-vxlan-leafs
   connection: local
   roles:
-    - remove_vxlan_vni
+    - remove_vxlan_tenant

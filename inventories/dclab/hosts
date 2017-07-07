@@ -1,4 +1,6 @@
 # DC Team Lab Inventory
+[solab-monitor]
+10.9.15.75
 
 [solab-jumphosts]
 10.9.15.51
@@ -9,11 +11,16 @@ solab-jumphosts
 
 [solab:children]
 solab-jumphosts
+solab-monitor
 
+[n9k-vxlan-leafs:children]
+n9k-vxlan-leafs-dc1
+n9k-vxlan-leafs-dc2
 
-
-[n9k-vxlan-leafs]
+[n9k-vxlan-leafs-dc1]
 10.9.2.[61:62]
+
+[n9k-vxlan-leafs-dc2]
 10.9.2.64
 
 [n9k-vxlan-spines]

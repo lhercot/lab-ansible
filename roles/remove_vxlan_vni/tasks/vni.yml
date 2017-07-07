@@ -1,0 +1,27 @@
+---
+- name: VxLAN - Remove SVI
+  nxos_config:
+    lines: "no interface Vlan{{ item.vlan_id }}"  
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Remove Vlan
+  nxos_vlan:
+    vlan_id: "{{ item.vlan_id }}"
+    mapped_vni: "{{ item.vni }}"
+    state: absent
+  with_items: "{{ tenant.vnis }}"
+
+- name: VxLAN - Remove VNI to NVE
+  nxos_vxlan_vtep_vni:
+    interface: "{{ nve }}"
+    vni: "{{ item.vni }}"
+    state: absent
+  with_items: "{{ tenant.vnis }}"
+  ignore_errors: yes
+
+- name: VxLAN - Remove VNI to EVPN
+  nxos_evpn_vni:
+    vni: "{{ item.vni }}"
+    state: absent
+  with_items: "{{ tenant.vnis }}"
+  ignore_errors: yes

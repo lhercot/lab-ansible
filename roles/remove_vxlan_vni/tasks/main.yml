@@ -1,10 +1,6 @@
 ---
-- name: VxLAN - Remove SVI Vlan{{ vlan_id }}
-  nxos_interface:
-    interface: "Vlan{{ vlan_id }}"
-    state: absent
-    admin_state: down
-    fabric_forwarding_anycast_gateway: true
-  register: output
-
-- debug: msg={{ output }}
+- include: vni.yml tenant={{elem}}
+  with_items: "{{ vxlan }}"
+  loop_control:
+       loop_var: elem
+  

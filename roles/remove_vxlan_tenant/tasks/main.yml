@@ -1,0 +1,43 @@
+---
+- name: VxLAN - Remove SVI
+  nxos_config:
+    lines: "no interface Vlan{{ item.vlan_id }}"  
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Ensure Tenant VRF doesn't exist
+  nxos_vrf:
+    vrf: "{{ item.vrf }}"
+    state: absent
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Remove Vlan
+  nxos_vlan:
+    vlan_id: "{{ item.vlan_id }}"
+    mapped_vni: "{{ item.vni }}"
+    state: absent
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Remove VNI to NVE
+  nxos_vxlan_vtep_vni:
+    interface: "{{ nve }}"
+    vni: "{{ item.vni }}"
+    state: absent
+  with_items: "{{ vxlan }}"
+  ignore_errors: yes
+
+- name: VxLAN - Ensure AF doesn't exists under VRF in BGP config
+  nxos_bgp_af:
+    asn: "{{ asn }}"
+    vrf: "{{ item.vrf }}"
+    afi: ipv4
+    safi: unicast
+    advertise_l2vpn_evpn: true
+    state: absent
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Ensure VRF doesn't exist in BGP config
+  nxos_bgp:
+    asn: "{{ asn }}"
+    vrf: "{{ item.vrf }}"
+    state: absent
+  with_items: "{{ vxlan }}"

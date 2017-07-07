@@ -1,0 +1,7 @@
+---
+- hosts: solab
+  user: root
+  roles:
+    - proxy_settings
+    - update_all
+    - ntp

@@ -1,0 +1,74 @@
+---
+- name: VxLAN - Create Vlan for L3 VNI
+  nxos_vlan:
+    name: "l3-vni-vlan-for-{{ item.vrf }}"
+    vlan_id: "{{ item.vlan_id }}"
+    mapped_vni: "{{ item.vni }}"
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Ensure Tenant VRF exists
+  nxos_vrf:
+    vrf: "{{ item.vrf }}"
+    vni: "{{ item.vni }}"
+    rd: auto
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Ensure Tenant VRF Address Family config
+  nxos_vrf_af:
+    vrf: "{{ item.vrf }}"
+    afi: ipv4
+    safi: unicast
+    route_target_both_auto_evpn: true
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Create SVI for L3 VNI
+  nxos_interface:
+    interface: "Vlan{{ item.vlan_id }}"
+    description: "L3 VNI Vlan{{ item.vlan_id }} | VNI {{ item.vni }} for Tenant {{item.vrf}} -- Configured by Ansible"
+    mode: layer3
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Assign SVI to Tenant VRF
+  nxos_vrf_interface:
+    vrf: "{{ item.vrf }}"
+    interface: "Vlan{{ item.vlan_id }}"
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Configure SVI for L3 VNI
+  nxos_interface:
+    interface: "Vlan{{ item.vlan_id }}"
+    mode: layer3
+    admin_state: up
+    ip_forward: enable
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Set MTU to 9216 on SVI 
+  nxos_mtu:
+    interface: "Vlan{{ item.vlan_id }}"
+    mtu: 9216
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Add VNI to NVE
+  nxos_vxlan_vtep_vni:
+    interface: "{{ nve }}"
+    vni: "{{ item.vni }}"
+    assoc_vrf: true
+    state: present
+  with_items: "{{ vxlan }}"
+
+- name: VxLAN - Ensure AF exists under VRF in BGP config
+  nxos_bgp_af:
+    asn: "{{ asn }}"
+    vrf: "{{ item.vrf }}"
+    afi: ipv4
+    safi: unicast
+    advertise_l2vpn_evpn: true
+    state: present
+  with_items: "{{ vxlan }}"
